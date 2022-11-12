@@ -1,0 +1,27 @@
+{
+	"files.exclude": 
+	{
+		"**/*.meta": true,
+		"**/*.map": true,
+		"**/*.csproj": true,
+		"**/*.sln": true,
+		"**/.vs": true,
+		"**/.vscode": true,
+		"**/Temp": true,
+		"**/UserSettings": true,
+		"**/ProjectSettings": true,
+		"**/obj": true,
+		"**/Logs": true,
+		"**/Library": true,
+		"**/Packages": true,
+		"**/*.unity": true,
+		"**/*.asset": true,
+		"**/*.md": true,
+		"**/*.json": true,
+		"**/*.pdf": true,
+		"**/*.asmdef": true,
+		"**/*.manifest": true,
+		"**/*.zip": true,
+		"**/*.prefab": true
+	}
+}
