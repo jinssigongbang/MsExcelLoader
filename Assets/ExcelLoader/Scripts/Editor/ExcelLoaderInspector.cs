@@ -72,19 +72,19 @@ public class CExcelLoaderInspector : Editor
         {
             GUILayout.Label("★외부에서 추가된 파일들★");
         }
+        GUIStyle myStyle = new GUIStyle(EditorStyles.textField);
+        myStyle.fontSize = 12;
+        myStyle.wordWrap = true;
         foreach (var item in ExcelLoader.I.m_Paths)
         {
             //  ExcelLoader.I.m_Paths.Clear() ;
             GUI.backgroundColor = Color.black;
             GUILayout.BeginHorizontal("box");
             GUI.backgroundColor = Color.white;
-            GUIStyle myStyle = new GUIStyle(EditorStyles.textField);
-            myStyle.fontSize = 12;
-            myStyle.wordWrap = true;
-            GUILayout.TextArea(item,myStyle);
+            GUILayout.TextArea(item, myStyle);
             GUI.backgroundColor = Color.red;
             //remove
-            if (GUILayout.Button("삭제", GUILayout.Width(40),GUILayout.MinWidth(40)))
+            if (GUILayout.Button("삭제", GUILayout.Width(40), GUILayout.MinWidth(40)))
             {
                 ExcelLoader.I.m_Paths.Remove(item);
                 SaveFileNames() ;
@@ -117,27 +117,38 @@ public class CExcelLoaderInspector : Editor
         //FOLDER OPEN
         if (GUILayout.Button("외부 폴더 선택", GUILayout.Height(30)))
         {
-            var folder = EditorUtility.OpenFolderPanel("MS Excel 파일 열기",GetPathForOpenPanel(),"");
-            System.IO.DirectoryInfo di = new DirectoryInfo(folder); 
-            foreach(var item in di.GetFiles())
+            var folder = EditorUtility.OpenFolderPanel("MS Excel 파일 열기", GetPathForOpenPanel(), "");
+            ///폴더 선택창을 눌렀을때 취소 버튼을 누르면 이름이 빈값으로 들어 온다.제대로 선택을 했는지 확인을 먼저 해야 에러가 발생하지 않는다.
+            if (Directory.Exists(folder))
             {
-                //'~'가 포함된건 엑셀 파일이 열렸을때 생성되는 임시 파일이니까 읽지 말자.
-                if(item.Name.Contains("~")) continue ;
-                if (!item.Name.ToLower().EndsWith(".xlsx") && !item.Name.ToLower().EndsWith(".xls")) continue;
-                if (ExcelLoader.I.m_Paths.Contains(item.FullName)) continue;
-                ExcelLoader.I.m_Paths.Add(item.FullName);
-                Debug.Log(item.FullName);
+                System.IO.DirectoryInfo di = new DirectoryInfo(folder);
+                foreach (var item in di.GetFiles())
+                {
+                    //'~'가 포함된건 엑셀 파일이 열렸을때 생성되는 임시 파일이니까 읽지 말자.
+                    if (item.Name.Contains("~")) continue;
+                    if (!item.Name.ToLower().EndsWith(".xlsx") && !item.Name.ToLower().EndsWith(".xls")) continue;
+                    if (ExcelLoader.I.m_Paths.Contains(item.FullName)) continue;
+                    ExcelLoader.I.m_Paths.Add(item.FullName);
+                    Debug.Log(item.FullName);
+                }
+                SaveFileNames();
             }
-            SaveFileNames() ;
         }
         GUILayout.EndHorizontal();
+        string saveFileName = Path.Combine(Application.persistentDataPath,"excelLoader.txt") ;
+        GUI.backgroundColor = Color.red;
+        if (GUILayout.Button("세이브파일 위치 복사", GUILayout.Height(20)))
+        {
+            GUIUtility.systemCopyBuffer =  Application.persistentDataPath ;//Path.Combine(Application.persistentDataPath,"excelLoader.txt") ;
+            Debug.Log($"{Application.persistentDataPath} 클립보드에 복사가 완료 되었습니다.");
+        }
         if (ExcelLoader.DOWNLOADPATH.Length == 0) return;
         if (ExcelLoader.CODEPATH.Length == 0) return;
-        if (ExcelLoader.ExcelCount == 0 && ExcelLoader.I.m_Paths.Count == 0) return;
-        
+        if (ExcelLoader.ExcelCount == 0 && ExcelLoader.I.m_Paths.Count == 0) return;        
         GUI.backgroundColor = Color.green;
+        GUILayout.Space(2);
         //START DATA CREATE
-        if (GUILayout.Button("데이터 및 코드 생성", GUILayout.Height(30)))
+        if (GUILayout.Button("데이터 및 코드 생성", GUILayout.Height(40)))
         {
             StartDataCreate();
         }
